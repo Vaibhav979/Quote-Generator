@@ -1,0 +1,23 @@
+package com.quote.QuoteGenerator.service;
+
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+@Service
+public class QuoteGenService {
+    
+
+    private Random random = new Random();
+
+    public String getQuote() {
+        return quotes.get(random.nextInt(quotes.size()));
+    }
+
+    public String addQuote(String quote) {
+        quotes.add(quote);
+        return "Quote added successfully!";
+    }
+}

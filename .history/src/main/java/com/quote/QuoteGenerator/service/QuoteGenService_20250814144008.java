@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import com.quote.QuoteGenerator.Repository.QuoteRepository;
 import com.quote.QuoteGenerator.model.Quotes;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -24,7 +25,7 @@ public class QuoteGenService {
     }
 
     public String addQuote(String quote) {
-        quoteRepository.save(new Quotes(quote));
+        quotes.add(quote);
         return "Quote added successfully!";
     }
 }

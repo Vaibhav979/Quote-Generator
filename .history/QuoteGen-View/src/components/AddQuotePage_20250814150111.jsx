@@ -39,7 +39,9 @@ const AddQuotePage = () => {
         <label> Quote: </label>
         <input
           {...register("quote", {
-            required: { value: true, message: "Quote cannot be empty" },
+            required: {value: true,
+              message: "Quote cannot be empty",
+            },
             minLength: {
               value: 5,
               message: "Quote must be at least 5 characters long",
