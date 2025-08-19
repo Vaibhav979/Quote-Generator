@@ -1,0 +1,100 @@
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
+
+const Navbar = ({ user, setUser }) => {
+
+  const handleLoginSuccess = async (credentialResponse) => {
+    const idToken = credentialResponse.credential;
+
+    try {
+      const res = await fetch("http://localhost:8080/api/auth/google", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ credential: idToken }),
+      });
+
+      if (!res.ok) throw new Error("Failed to authenticate");
+      const data = await res.json();
+      setUser(data); // This will update App.jsx user state
+    } catch (error) {
+      console.error("Login error", error);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch("http://localhost:8080/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      window.location.href = "/"; // Redirect to home after logout
+    } catch (err) {
+      console.error("Logout failed", err);
+    } finally {
+      setUser(null);
+    }
+  };
+
+  return (
+    <div className="w-full h-16 bg-gray-800 flex items-center px-6 shadow-md">
+      <nav className="flex items-center justify-between w-full">
+        <div className="text-white text-2xl font-bold">QuoteGen</div>
+        <ul className="list-none flex items-center gap-8 text-white text-lg">
+          <li>
+            <Link to="/" className="hover:text-gray-400">
+              Home
+            </Link>
+          </li>
+          <li>
+            <Link to="/about" className="hover:text-gray-400">
+              About
+            </Link>
+          </li>
+          {user && }
+          <li>
+            <Link to="/dashboard" className="hover:text-gray-400">
+              Dashboard
+            </Link>
+          </li>
+        </ul>
+
+        {!user ? (
+          <GoogleLogin
+            onSuccess={(credentialResponse) => {
+              try {
+                handleLoginSuccess(credentialResponse);
+              } catch (error) {
+                console.error("JWT Decode error:", error);
+              }
+            }}
+            onError={() => {
+              console.log("Login Failed");
+            }}
+          />
+        ) : (
+          <div className="flex items-center gap-3 text-white">
+            <img
+              src={user.picture || "default-avatar.png"}
+              alt="Profile"
+              style={{ width: "30px", height: "30px", borderRadius: "50%" }}
+            />
+            <span>{user.name || "User"}</span>
+            <button
+              onClick={handleLogout}
+              className="ml-2 px-2 py-1 bg-red-600 text-white rounded hover:bg-red-500 text-sm"
+            >
+              Logout
+            </button>
+          </div>
+        )}
+      </nav>
+    </div>
+  );
+};
+
+export default Navbar;
